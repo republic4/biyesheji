@@ -1,0 +1,182 @@
+{#{% load grav_tag %}#}
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>推荐系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/zerogrid.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <style>
+        .dropdown-container {
+          position: relative;
+        }
+
+        .dropdown-menu {
+          position: absolute;
+          top: 100%; /* Bottom of button */
+          right: 0;
+          margin-left: -100px; /* More to the left */
+        }
+    </style>
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+          crossorigin="anonymous">
+</head>
+<body>
+<div class="wrap-body">
+    <header>
+        <div class="wrap-header zerogrid">
+            <div class="row">
+                <div class="col-1-2">
+                    <div class="wrap-col">
+                        <div class="logo" style="font-size: 33px;padding: 16px 0;font-family: sans-serif; ">
+                            <a href="/"> 新能源汽车推荐系统</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-1-2">
+                    <div class="wrap-col f-right">
+                        <form method="post" action="{% url 'search' %}" id="search">
+                            {% csrf_token %}
+                            <input name="search" type="text" size="40" placeholder="搜索..."/>
+                            <input type="submit" value="提交">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="menu">
+                    <nav>
+                        <div class="wrap-nav">
+                            <ul class="nav navbar-nav">
+                                <li class="active"><a href= {% url 'index' %}>首页</a></li>
+                                <li class="active"><a href= {% url 'all_tags' %}>标签</a></li>
+                                <li class="dropdown-container">
+                                    <a href="#" class="dropdown-toggle"  id="dropdownMenu1" data-toggle="dropdown">数据可视化
+                                        <b class="caret"></b>
+                                    </a>
+                                    <ul class="dropdown-menu pull-left" role="menu" aria-labelledby="dropdownMenu1">
+                                        <li role="presentation">
+                                            <a role="menuitem" tabindex="-1" href="{% url "charts_1" %}">分类数量&新能源汽车评分</a>
+                                        </li>
+                                        <li role="presentation">
+                                            <a role="menuitem" tabindex="-1" href="{% url "charts_2" %}">新能源汽车名称词云图</a>
+                                        </li>
+                                        <li role="presentation">
+                                            <a role="menuitem" tabindex="-1" href="{% url "charts_3" %}">新能源汽车上架数量曲线</a>
+                                        </li>
+                                        <li role="presentation">
+                                            <a role="menuitem" tabindex="-1" href="{% url "charts_4" %}">分类占比图</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                {% if request.session.login_in == True %}
+                                    <li><a href="{% url 'personal' %}">{{ request.session.name }}</a></li>
+                                    <li><a href="{% url 'logout' %}">退出登录</a></li>
+                                {% else %}
+                                    {{ request.session.login_in }}
+                                    <li class="active"><a href= {% url 'login' %}>登录</a></li>
+                                    <li class="active"><a href= {% url 'register' %}>注册</a></li>
+                                     <li class="active"><a href=http://127.0.0.1:8000/admin>后台管理</a></li>
+                                    {#                                    <li><a href="{% url 'clear_cache' %}">清除缓存</a></li>#}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!--////////////////////////////////////Container-->
+
+    <!--////////////////////////////////////Footer-->
+
+    <div id="chart" style="width:64.7%;height:650px; margin-bottom: 70px; margin-left: 17.7%;"></div>
+</div>
+<script type="text/javascript" src="{% static "screen/echarts.min.js" %}"></script>
+<script type="text/javascript" src="{% static "screen/jquery-2.2.1.min.js" %}"></script>
+<script src="{% static "/js/bootstrap.min.js" %}"></script>
+<script type="text/javascript" src="{% static "screen/customed.js" %}"></script>
+<script type="text/javascript" src="{% static "screen/macarons.js" %}"></script>
+{#<script src="{% static 'js/css3-mediaqueries.js' %}"></script>#}
+<script src="{% static "screen/echarts-wordcloud.min.js" %}"></script>
+<script>
+$(function () {
+    echarts_c2();
+
+    function echarts_c2() {
+        var myChart_c2 = echarts.init(document.getElementById('chart'), 'macarons');
+
+        var option_c2 = {
+                  // title: {
+                  //   text: 'Referer of a Website',
+                  //   subtext: 'Fake Data',
+                  //   left: 'left'
+                  // },
+                // grid:{
+                //     show:false,
+                //     top:'5%',    // 一下数值可为百分比也可为具体像素值
+                //     right:'5%',
+                //     bottom:'5%',
+                //     left:'5%'
+                //     },
+                  tooltip: {
+                    trigger: 'item',
+                      formatter: "{a} <br/>{b} : {c} ({d}%)"
+                  },
+                  // legend: {
+                  //   orient: 'vertical',
+                  //   left: 'left'
+                  // },
+                  series: [
+                    {
+                      name: '类型',
+                      type: 'pie',
+                      radius: '65%',
+                      center:["50%", "45%"],
+                         itemStyle:{
+                                    normal:{
+                                       label:{
+                                          show: true,
+                                          formatter: '{b} : {d}%'
+                                          },
+                                          labelLine :{show:true}
+                                          }
+                                     },
+                      data: {{ charts4_data | safe }},
+                         // label: {
+                         //      formatter: "{a} <br/>{b} : {c} ({d}%)",
+                         //      textStyle: {
+                         //          fontSize: 25,
+                         //      }
+                         //          },
+                          emphasis: {
+                            itemStyle: {
+                              shadowBlur: 10,
+                              shadowOffsetX: 0,
+                              shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                          },
+                        labelLine: {
+                            show: 'true',
+                            length: 70,
+                            lineStyle: {
+                                width: 1,
+                                type: 'solid'
+                        }
+                      }
+                        }
+                      ]
+                    };
+
+        myChart_c2.setOption(option_c2);
+    }
+
+});
+</script>
+</body>
+</html>

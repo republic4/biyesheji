@@ -1,0 +1,21 @@
+{% extends "base_show.html" %}
+{% block th_name %}
+    <th>新能源汽车名称</th>
+    <th>价格</th>
+    <th>标签</th>
+    <th>查看</th>
+{% endblock %}
+{% block th_value %}
+    <td><a href="{% url 'item' i.id %}"> {{ i.name }}</a></td>
+    <td><a href="{% url 'c2_movie' i.c2 %}">{{ i.c2 }}</a></td>
+    <td> {% if i.tags.all %}
+        {% for tag in i.tags.all %}
+            <a href="{% url 'one_tag' tag.id %}">{{ tag }}</a>
+        {% endfor %}
+    {% else %}
+        无
+    {% endif %}
+    </td>
+    <td><a class="btn btn-success" href="{% url 'item' i.id %}">查看</a></td>
+{% endblock %}
+
